@@ -7023,37 +7023,20 @@
         unsupported: ""
 - source: dev-infrastructure/modules/metrics/rules/generatedRPPrometheusAlertingRules.bicep
   group: rp-user-journey-cluster-upgrade-monitor-rules
-  alert: userJourneyClusterUpgradeStuckInDesired
+  alert: userJourneyClusterUpgradeStuck
   occurrence: 1
-  input: (hosted_control_plane_upgrade:duration_in_desired:seconds > 1200) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
+  input: hosted_control_plane_upgrade:stuck:bool == 1
   plan:
-    expression: (hosted_control_plane_upgrade:duration_in_desired:seconds > 1200) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
+    expression: hosted_control_plane_upgrade:stuck:bool == 1
     conditions:
-      - expression: (hosted_control_plane_upgrade:duration_in_desired:seconds > 1200) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-        path: root/unless:left
+      - expression: hosted_control_plane_upgrade:stuck:bool == 1
+        path: root
         queries:
-          - expression: (hosted_control_plane_upgrade:duration_in_desired:seconds) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
+          - expression: hosted_control_plane_upgrade:stuck:bool
             role: signal
         thresholds:
-          - operator: '>'
-            value: 1200
-        unsupported: ""
-- source: dev-infrastructure/modules/metrics/rules/generatedRPPrometheusAlertingRules.bicep
-  group: rp-user-journey-cluster-upgrade-monitor-rules
-  alert: userJourneyClusterUpgradeStuckInProgress
-  occurrence: 1
-  input: (hosted_control_plane_upgrade:duration_in_progress:seconds > 1800) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
-  plan:
-    expression: (hosted_control_plane_upgrade:duration_in_progress:seconds > 1800) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
-    conditions:
-      - expression: (hosted_control_plane_upgrade:duration_in_progress:seconds > 1800) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-        path: root/unless:left
-        queries:
-          - expression: (hosted_control_plane_upgrade:duration_in_progress:seconds) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-            role: signal
-        thresholds:
-          - operator: '>'
-            value: 1800
+          - operator: ==
+            value: 1
         unsupported: ""
 - source: fleet/alerts/fleet-prometheusRule.yaml
   group: fleet
@@ -12199,49 +12182,21 @@
         unsupported: ""
 - source: observability/alerts/userJourneyClusterUpgradeMonitor-prometheusRule.yaml
   group: rp-user-journey-cluster-upgrade-monitor-rules
-  alert: userJourneyClusterUpgradeStuckInDesired
+  alert: userJourneyClusterUpgradeStuck
   occurrence: 1
   input: |
-    (
-      hosted_control_plane_upgrade:duration_in_desired:seconds > 1200
-    )
-    unless on (cluster, resource_id) (
-      backend_cluster_provision_state{phase="deleting"} == 1
-    )
+    hosted_control_plane_upgrade:stuck:bool == 1
   plan:
-    expression: (hosted_control_plane_upgrade:duration_in_desired:seconds > 1200) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
+    expression: hosted_control_plane_upgrade:stuck:bool == 1
     conditions:
-      - expression: (hosted_control_plane_upgrade:duration_in_desired:seconds > 1200) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-        path: root/unless:left
+      - expression: hosted_control_plane_upgrade:stuck:bool == 1
+        path: root
         queries:
-          - expression: (hosted_control_plane_upgrade:duration_in_desired:seconds) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
+          - expression: hosted_control_plane_upgrade:stuck:bool
             role: signal
         thresholds:
-          - operator: '>'
-            value: 1200
-        unsupported: ""
-- source: observability/alerts/userJourneyClusterUpgradeMonitor-prometheusRule.yaml
-  group: rp-user-journey-cluster-upgrade-monitor-rules
-  alert: userJourneyClusterUpgradeStuckInProgress
-  occurrence: 1
-  input: |
-    (
-      hosted_control_plane_upgrade:duration_in_progress:seconds > 1800
-    )
-    unless on (cluster, resource_id) (
-      backend_cluster_provision_state{phase="deleting"} == 1
-    )
-  plan:
-    expression: (hosted_control_plane_upgrade:duration_in_progress:seconds > 1800) unless on (cluster, resource_id) (backend_cluster_provision_state{phase="deleting"} == 1)
-    conditions:
-      - expression: (hosted_control_plane_upgrade:duration_in_progress:seconds > 1800) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-        path: root/unless:left
-        queries:
-          - expression: (hosted_control_plane_upgrade:duration_in_progress:seconds) unless on (cluster, resource_id) ((backend_cluster_provision_state{phase="deleting"} == 1))
-            role: signal
-        thresholds:
-          - operator: '>'
-            value: 1800
+          - operator: ==
+            value: 1
         unsupported: ""
 - source: tooling/tenant-quota/alerting.bicep
   group: e2e-expired-resource-group-alerts
